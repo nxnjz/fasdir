@@ -50,6 +50,7 @@ USAGE:
 
 FLAGS:
     -U, --unsafe-https    Ignore invalid hostnames and certificate errors
+    -O, --overwrite       Allow overwriting the specified output file
     -v                    Verbosity level: -v or -vv or -vvv.
     -h, --help            Prints help information
     -V, --version         Prints version information
@@ -72,6 +73,10 @@ OPTIONS:
              Default: 200-299,301,302,403
     -c, --cookie <Cookie List>               Optional cookie list in the form of "name=value; name2=value2;
                                              name3=value3;"
+    -o, --output-file <Output File>          Write results to a file. Only positive results will be saved, regardless of
+                                             verbosity level.
+                                             If the file already exits, RustBuster will exit.
+                                             Use -O to allow overwriting an existing file.
     -p, --proxy <Proxy>                      Use a proxy for http and https in one of the following formats:
                                              http(s)://myproxy.net:port
                                              user:pass@http(s)://myproxy.tld:port
