@@ -24,7 +24,7 @@ use std::sync::{Arc, Mutex};
 use std::{fs, fs::File, fs::OpenOptions, io::Write, path::Path, thread, time::Duration};
 
 fn main() {
-    let app_ver = "0.1.4";
+    let app_ver = "0.1.5";
     let app_name = "RustBuster";
 
     let args = App::new(app_name)
@@ -165,7 +165,15 @@ fn main() {
                 .multiple(false)
                 .takes_value(false)
                 .required(false)
+            ).arg(
+            Arg::with_name("Referer String")
+                .long("referer")
+                .help("Set the referer header.")
+                .multiple(false)
+                .takes_value(true)
+                .required(false)
             )
+
         .get_matches();
 
     //check output file
@@ -293,6 +301,9 @@ fn main() {
         .value_of("Basic Auth")
         .map(|x| "Basic ".to_string() + &b64(x));
 
+    //referer
+    let referer = args.value_of("Referer String");
+
     //status codes
     let stat_codes = args
         .value_of("Status Codes")
@@ -373,6 +384,9 @@ fn main() {
     if basic_auth.is_some() {
         headers.insert(header::AUTHORIZATION, basic_auth.unwrap().parse().unwrap());
     }
+    if referer.is_some() {
+        headers.insert(header::REFERER, referer.unwrap().parse().unwrap());
+    }
 
     //create headers Arc
     let headers = Arc::new(headers);
@@ -422,6 +436,5 @@ fn main() {
         //to fix: handle possible error result
         x.write_all(found_urls.lock().unwrap().as_bytes());
     }
-    bar.finish();
-    println!("Done!\n");
+    bar.finish_with_message("Finished!\n");
 }
