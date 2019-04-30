@@ -218,7 +218,7 @@ fn main() {
         .expect(format!("Could not read {}", dic_filename).as_str());
     if dic_str.is_empty() {
         println!("{} seems empty, exiting...", dic_filename);
-        panic!("Intentional panic");
+        panic!("Nothing to read from input file.");
     }
 
     //extensions
