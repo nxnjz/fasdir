@@ -24,6 +24,8 @@ pub struct Config {
     pub proxy_url: Option<String>,
     pub proxy_auth: Option<String>,
     pub retry_limit: u64,
+    pub use_get: bool,
+    pub use_post: bool,
     //pub outfile: Option<File>,
 }
 
@@ -101,7 +103,14 @@ pub fn tjob(
             &config.verbosity,
             bar,
         );
-        let mut resp = client.head(url).send();
+        let mut resp;
+        if config.use_get {
+            resp = client.get(url).send();
+        } else if config.use_post {
+            resp = client.post(url).send();
+        } else {
+            resp = client.head(url).send();
+        }
         while resp.is_err() && attempt < config.retry_limit {
             bar_output(
                 format!("Retrying for {}, [attempt {}]", url, attempt),

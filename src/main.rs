@@ -1,16 +1,3 @@
-/*      Copyright (C) 2019 A. Karl W.
-This file is part of RustBuster.
-RustBuster is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-RustBuster is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-You should have received a copy of the GNU General Public License
-along with RustBuster. If not, see <http://www.gnu.org/licenses/>. */
-
 //TO DO: do not save results to string unless user wants to output to file.
 
 mod rblib;
@@ -129,7 +116,7 @@ fn main() {
             Arg::with_name("Proxy")
                 .short("p")
                 .long("proxy")
-                .help("Use a proxy for http and https in one of the following formats:\nhttp(s)://myproxy.net:port\nuser:pass@http(s)://myproxy.tld:port")
+                .help("Use a proxy for http and https in one of the following formats:\nhttp(s)://myproxy.tld:port\nuser:pass@http(s)://myproxy.tld:port")
                 .multiple(false)
                 .takes_value(true)
                 .required(false)
@@ -172,11 +159,28 @@ fn main() {
                 .multiple(false)
                 .takes_value(true)
                 .required(false)
+            ).arg(
+            Arg::with_name("Use GET")
+                .short("g")
+                .long("get")
+                .help("Send GET requests. By default, Rustbuster uses HEAD.\nThis is required for some servers that do not respond to HEAD requests properly.")
+                .multiple(false)
+                .takes_value(false)
+                .required(false)
+            ).arg(
+            Arg::with_name("Use POST")
+                .short("n")
+                .long("post")
+                .help("Send POST requests. By default, Rustbuster uses HEAD.")
+                .multiple(false)
+                .takes_value(false)
+                .required(false)
             )
+
+
 
         .get_matches();
 
-    //check output file
     let out_filename = args.value_of("Output File");
     if out_filename.is_some()
         && Path::new(out_filename.unwrap()).exists()
@@ -196,24 +200,20 @@ fn main() {
         );
     }
 
-    //create string for writing to file later
     let found_urls = String::new();
 
-    //base url
     let mut base_url = args.value_of("Base URL").unwrap().to_string();
     if !base_url.ends_with("/") {
         base_url.push('/');
     }
 
-    //threads
     let mut t_num: usize = args
         .value_of("Threads")
         .unwrap_or("12")
         .parse::<usize>()
         .unwrap_or(12);
 
-    //input file
-    let dic_filename = args.value_of("dictionary").unwrap(); //unwrap is ok, this arg is required.
+    let dic_filename = args.value_of("dictionary").unwrap();
     let dic_str = fs::read_to_string(dic_filename)
         .expect(format!("Could not read {}", dic_filename).as_str());
     if dic_str.is_empty() {
@@ -221,13 +221,10 @@ fn main() {
         panic!("Nothing to read from input file.");
     }
 
-    //extensions
     let ext_str = args.value_of("Extensions").unwrap_or("");
 
-    //verbosity
     let verbosity = args.occurrences_of("Verbosity");
 
-    //timeout
     let timeout_input = args
         .value_of("Timeout")
         .unwrap_or("30")
@@ -238,20 +235,17 @@ fn main() {
         _ => Some(Duration::from_secs(timeout_input)),
     };
 
-    //retry count
     let retry_limit: u64 = args
         .value_of("Retry Count")
         .unwrap_or("0")
         .parse()
         .unwrap_or(0);
 
-    //UA
     let client_ua = (args
         .value_of("User Agent")
         .unwrap_or(&(app_name.to_string() + "/" + app_ver)))
     .to_string();
 
-    //cookies
     let cookies = if args.is_present("Cookie List") {
         Some(
             args.value_of("Cookie List")
@@ -261,17 +255,14 @@ fn main() {
         None
     };
 
-    //ignore cert errors
     let ignore_cert = args.is_present("Ignore HTTPS Certificate Errors");
 
-    //max redirects
     let redir_limit: usize = args
         .value_of("Redirect Limit")
         .unwrap_or("0")
         .parse()
         .unwrap_or(0);
 
-    //proxy parsing
     let proxy_input = args.value_of("Proxy");
     #[allow(unused_assignments)]
     let mut proxy_url: Option<String> = None;
@@ -296,15 +287,12 @@ fn main() {
         proxy_auth = None;
     }
 
-    //basic auth credentials
     let basic_auth = args
         .value_of("Basic Auth")
         .map(|x| "Basic ".to_string() + &b64(x));
 
-    //referer
     let referer = args.value_of("Referer String");
 
-    //status codes
     let stat_codes = args
         .value_of("Status Codes")
         .unwrap_or("200-299,301,302,403");
@@ -328,7 +316,11 @@ fn main() {
         }
     }
 
-    //create urls
+    let use_get = args.occurrences_of("Use GET") >= 1;
+    println!("{:?}", use_get);
+    let use_post = args.occurrences_of("Use POST") >= 1;
+    println!("{:?}", use_post);
+
     let mut urls: Vec<String> = Vec::new();
     for i in dic_str.split_whitespace() {
         for j in ext_str.split(',') {
@@ -336,13 +328,10 @@ fn main() {
         }
     }
 
-    //reduce threads if not enough urls
     if urls.len() < t_num {
         t_num = urls.len();
     }
 
-    //generate vector of number of urls per thread, for splitting targets
-    //tries to distribute them as equally as possible
     let mut url_per_thread = Vec::new();
     for _ in 0..(urls.len() % t_num) {
         url_per_thread.push(urls.len() / t_num + 1);
@@ -351,7 +340,6 @@ fn main() {
         url_per_thread.push(urls.len() / t_num);
     }
 
-    //split urls to vec of vecs of strings
     let mut url_map = Vec::new();
     let mut start = 0;
     let mut end = 0;
@@ -371,10 +359,11 @@ fn main() {
         proxy_url: proxy_url,
         proxy_auth: proxy_auth,
         retry_limit: retry_limit,
+        use_get: use_get,
+        use_post: use_post,
         //outfile: outfile,
     };
 
-    //setup headers
     let mut headers = header::HeaderMap::new();
     headers.insert(header::USER_AGENT, client_ua.parse().unwrap());
     headers.insert(header::CONNECTION, "keep-alive".parse().unwrap());
@@ -388,16 +377,9 @@ fn main() {
         headers.insert(header::REFERER, referer.unwrap().parse().unwrap());
     }
 
-    //create headers Arc
     let headers = Arc::new(headers);
-    //create config Arc
     let config = Arc::new(config);
 
-    //create shared counter
-    //may be used soon
-
-    //let progress = Arc::new(AtomicU64::new(0));
-    //create bar and put it in Arc
     let bar = ProgressBar::new(urls.len() as u64);
     bar.set_style(
         ProgressStyle::default_bar().template("[{elapsed_precise}] {wide_bar} {pos}/{len}"),
@@ -411,30 +393,25 @@ fn main() {
     );
     bar_output(init_msg, 0, &config.verbosity, &bar);
 
-    //vec for storing threads
     let mut threads = Vec::new();
-    //string to which threads will add found results, for saving to file later.
     let mut found_urls = Arc::new(Mutex::new(found_urls));
     for i in 0..t_num {
         let url_map_i = url_map[i as usize].clone();
-        //clone pointers
         let config = Arc::clone(&config);
         let headers = Arc::clone(&headers);
         let bar = Arc::clone(&bar);
         let found_urls = Arc::clone(&mut found_urls);
-        //spawn threads
         threads.push(thread::spawn(move || {
             tjob(i, &url_map_i, &config, &headers, &bar, &found_urls);
         }));
     }
 
-    //wait for threads to finish
     for t in threads {
         let _ = t.join();
     }
     if let Some(mut x) = outfile {
-        //to fix: handle possible error result
-        x.write_all(found_urls.lock().unwrap().as_bytes());
+        x.write_all(found_urls.lock().unwrap().as_bytes())
+            .expect("");
     }
     bar.finish_with_message("Finished!\n");
 }
