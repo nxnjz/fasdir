@@ -12,12 +12,15 @@ Installing from source requires Cargo. Refer to https://doc.rust-lang.org/cargo/
 `git clone https://gitlab.com/nxnjz/rustbuster.git` 
 `cargo install --path rustbuster/`
 
-# Usage
+# Usage Examples
 
+### to check for /word
 `rustbuster -u https://yoursite.tld/ -w /usr/share/wordlists/dirb/small.txt`
 
+### to check for /word.html /word.php /word.txt
 `rustbuster -u https://yoursite.tld/ -w /usr/share/wordlists/dirb/small.txt -x .html,.php,.txt`
 
+### to check for /word.html /word.php /word.txt /word (notice the trailing comma passed to -x)
 `rustbuster -u https://yoursite.tld/ -w /usr/share/wordlists/dirb/small.txt -x .html,.php,.txt,`
 
 
