@@ -11,7 +11,7 @@ use std::sync::{Arc, Mutex};
 use std::{fs, fs::File, fs::OpenOptions, io::Write, path::Path, thread, time::Duration};
 
 fn main() {
-    let app_ver = "0.1.5";
+    let app_ver = "0.1.6";
     let app_name = "RustBuster";
 
     let args = App::new(app_name)
@@ -60,7 +60,7 @@ fn main() {
             Arg::with_name("Status Codes")
                 .short("s")
                 .long("status-codes")
-                .help("Comma separated list of status codes which should be considered success. Dashes can be used to specify ranges.\n Default: 200-299,301,302,403")
+                .help("Comma separated list of status codes which should be considered success. Dashes can be used to specify ranges.\n Default: 0-403,405-999")
                 .takes_value(true)
                 .required(false)
                 .display_order(5)
@@ -176,6 +176,16 @@ fn main() {
                 .takes_value(false)
                 .required(false)
             )
+            //.arg(
+            //Arg::with_name("Content Length")
+            //    .short("c")
+            //    .long("length")
+            //    .help("Print Content Length value of reponse")
+            //    .multiple(false)
+            //    .takes_value(false)
+            //    .required(false)
+            //)
+
 
 
 
@@ -293,9 +303,7 @@ fn main() {
 
     let referer = args.value_of("Referer String");
 
-    let stat_codes = args
-        .value_of("Status Codes")
-        .unwrap_or("200-299,301,302,403");
+    let stat_codes = args.value_of("Status Codes").unwrap_or("0-403,405-999");
     let mut codes: Vec<usize> = Vec::new();
     for code in stat_codes.split(',') {
         if code.contains('-') {

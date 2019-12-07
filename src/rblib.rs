@@ -13,6 +13,7 @@ along with RustBuster. If not, see <http://www.gnu.org/licenses/>. */
 
 use indicatif::ProgressBar;
 use reqwest::{header, Client, RedirectPolicy};
+use std::collections::HashMap;
 use std::time::Duration;
 
 pub struct Config {
@@ -26,6 +27,7 @@ pub struct Config {
     pub retry_limit: u64,
     pub use_get: bool,
     pub use_post: bool,
+    //    pub print_len: bool,
     //pub outfile: Option<File>,
 }
 
@@ -145,7 +147,11 @@ pub fn tjob(
             .expect("[Err 31]Error parsing response code")
             .parse()
             .expect("[Err 32]Error parsing response code");
-        let out_msg = format!("{} {}", url, resp.status());
+        let cont_len: String = resp
+            .content_length()
+            .map(|l| l.to_string())
+            .unwrap_or("x".to_string());
+        let out_msg = format!("{} [{}] (Length:{})", url, resp.status(), cont_len);
         if config.codes.contains(&resp_code) {
             bar_output(out_msg.clone(), 0, &config.verbosity, bar);
             {
