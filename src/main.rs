@@ -2,6 +2,7 @@
 
 mod rblib;
 
+use atty;
 use base64::encode as b64;
 use clap::{App, Arg};
 use indicatif::{ProgressBar, ProgressStyle};
@@ -325,9 +326,9 @@ fn main() {
     }
 
     let use_get = args.occurrences_of("Use GET") >= 1;
-    println!("{:?}", use_get);
+    //println!("{:?}", use_get);
     let use_post = args.occurrences_of("Use POST") >= 1;
-    println!("{:?}", use_post);
+    //println!("{:?}", use_post);
 
     let mut urls: Vec<String> = Vec::new();
     for i in dic_str.split_whitespace() {
@@ -369,7 +370,7 @@ fn main() {
         retry_limit: retry_limit,
         use_get: use_get,
         use_post: use_post,
-        //outfile: outfile,
+        tty: atty::is(atty::Stream::Stdout), //outfile: outfile,
     };
 
     let mut headers = header::HeaderMap::new();
@@ -399,7 +400,7 @@ fn main() {
         urls.len(),
         t_num
     );
-    bar_output(init_msg, 0, &config.verbosity, &bar);
+    bar_output(init_msg, 0, &config.verbosity, &bar, &config.tty);
 
     let mut threads = Vec::new();
     let mut found_urls = Arc::new(Mutex::new(found_urls));

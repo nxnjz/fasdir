@@ -27,6 +27,7 @@ pub struct Config {
     pub retry_limit: u64,
     pub use_get: bool,
     pub use_post: bool,
+    pub tty: bool,
     //    pub print_len: bool,
     //pub outfile: Option<File>,
 }
@@ -40,12 +41,22 @@ where
     }
 }
 
-pub fn bar_output<T>(msg: T, msg_level: u64, &verbosity_conf: &u64, bar: &ProgressBar) -> ()
+pub fn bar_output<T>(
+    msg: T,
+    msg_level: u64,
+    &verbosity_conf: &u64,
+    bar: &ProgressBar,
+    &tty: &bool,
+) -> ()
 where
     T: Into<String>,
 {
     if msg_level <= verbosity_conf {
-        bar.println(msg);
+        if tty {
+            bar.println(msg);
+        } else {
+            println!("{}", msg.into());
+        }
     }
 }
 
@@ -57,7 +68,13 @@ pub fn tjob(
     bar: &ProgressBar,
     found_urls: &std::sync::Arc<std::sync::Mutex<std::string::String>>,
 ) {
-    bar_output(format!("Thread {} started", i), 3, &config.verbosity, bar);
+    bar_output(
+        format!("Thread {} started", i),
+        3,
+        &config.verbosity,
+        bar,
+        &config.tty,
+    );
     #[allow(unused_assignments)]
     let mut proxy_url = String::new();
     let mut clientbuild = Client::builder();
@@ -104,6 +121,7 @@ pub fn tjob(
             3,
             &config.verbosity,
             bar,
+            &config.tty,
         );
         let mut resp;
         if config.use_get {
@@ -119,6 +137,7 @@ pub fn tjob(
                 3,
                 &config.verbosity,
                 bar,
+                &config.tty,
             );
             resp = client.head(url).send();
             attempt += 1;
@@ -133,6 +152,7 @@ pub fn tjob(
                 1,
                 &config.verbosity,
                 bar,
+                &config.tty,
             );
             bar.inc(1);
             continue;
@@ -147,19 +167,20 @@ pub fn tjob(
             .expect("[Err 31]Error parsing response code")
             .parse()
             .expect("[Err 32]Error parsing response code");
-        let cont_len: String = resp
-            .content_length()
-            .map(|l| l.to_string())
-            .unwrap_or("x".to_string());
+        let cont_len = resp
+            .headers()
+            .get("Content-Length")
+            .map(|l| l.to_str().unwrap_or("x"))
+            .unwrap_or("x");
         let out_msg = format!("{} [{}] (Length:{})", url, resp.status(), cont_len);
         if config.codes.contains(&resp_code) {
-            bar_output(out_msg.clone(), 0, &config.verbosity, bar);
+            bar_output(out_msg.clone(), 0, &config.verbosity, bar, &config.tty);
             {
                 let mut found_urls = found_urls.lock().unwrap();
                 found_urls.push_str(&(out_msg + "\n"));
             }
         } else {
-            bar_output(out_msg, 2, &config.verbosity, bar);
+            bar_output(out_msg, 2, &config.verbosity, bar, &config.tty);
         }
         bar.inc(1);
     }
