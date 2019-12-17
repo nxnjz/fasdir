@@ -12,7 +12,7 @@ use std::sync::{Arc, Mutex};
 use std::{fs, fs::File, fs::OpenOptions, io::Write, path::Path, thread, time::Duration};
 
 fn main() {
-    let app_ver = "0.1.6";
+    let app_ver = "0.1.7";
     let app_name = "RustBuster";
 
     let args = App::new(app_name)
@@ -197,7 +197,7 @@ fn main() {
         && Path::new(out_filename.unwrap()).exists()
         && args.occurrences_of("Overwrite Output File") == 0
     {
-        println!("Use the -O flag to allow overwriting. Exiting...");
+        println!("Add the -O flag to allow overwriting. Exiting...");
         panic!("Output File already exists.");
     }
     let mut outfile: Option<File> = None;
