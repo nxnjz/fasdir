@@ -114,6 +114,7 @@ pub fn tjob(
         3,
         &config.verbosity,
     );
+    let mut force_get = false;
     for url in urllist.iter() {
         let mut attempt = 0;
         bar_output(
@@ -124,7 +125,7 @@ pub fn tjob(
             &config.tty,
         );
         let mut resp;
-        if config.use_get {
+        if config.use_get || force_get {
             resp = client.get(url).send();
         } else if config.use_post {
             resp = client.post(url).send();
@@ -173,6 +174,16 @@ pub fn tjob(
             .map(|l| l.to_str().unwrap_or("x"))
             .unwrap_or("x");
         let out_msg = format!("{} [{}] (Length:{})", url, resp.status(), cont_len);
+        if resp_code == 405 {
+            bar_output(
+                "Got 405, switching to GET",
+                1,
+                &config.verbosity,
+                bar,
+                &config.tty,
+            );
+            force_get = true;
+        }
         if config.codes.contains(&resp_code) {
             bar_output(out_msg.clone(), 0, &config.verbosity, bar, &config.tty);
             {
