@@ -1,7 +1,6 @@
 # RustBuster
 
-RustBuster is a simple multithreaded CLI tool for bruteforcing files and/or directories on HTTP(s) servers, similar to GoBuster, DirBuster, and Dirb.
-
+RustBuster is a fast and simple multithreaded CLI tool for bruteforcing files and/or directories on HTTP(s) servers, similar to GoBuster, DirBuster, and Dirb.
 
 # Installation
 

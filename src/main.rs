@@ -141,7 +141,7 @@ fn main() {
             Arg::with_name("Output File")
                 .short("o")
                 .long("output-file")
-                .help("Write results to a file. Only positive results will be saved, regardless of verbosity level.\nIf the file already exits, RustBuster will exit.\nUse -O to allow overwriting an existing file.")
+                .help("Write results to a file. Only \"positive\" results will be saved, regardless of verbosity level.\nIf the file already exits, RustBuster will exit.\nAdd -O to allow overwriting an existing file.")
                 .multiple(false)
                 .takes_value(true)
                 .required(false)
