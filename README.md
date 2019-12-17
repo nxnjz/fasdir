@@ -13,23 +13,19 @@ Installing from source requires Cargo. Refer to https://doc.rust-lang.org/cargo/
 
 # Usage Examples
 
-### to check for /word
+### to check for /$word
 `rustbuster -u https://yoursite.tld/ -w /usr/share/wordlists/dirb/small.txt`
 
-### to check for /word.html /word.php /word.txt
-`rustbuster -u https://yoursite.tld/ -w /usr/share/wordlists/dirb/small.txt -x .html,.php,.txt`
+### to check for /$word.html /$word.php /$word.txt and look for "200 OK" responses only
+`rustbuster -u https://yoursite.tld/ -w /usr/share/wordlists/dirb/small.txt -x .html,.php,.txt -s 200`
 
-### to check for /word.html /word.php /word.txt /word (notice the trailing comma passed to -x)
+### to check for /$word.html /$word.php /$word.txt /$word (notice the trailing comma passed to -x)
 `rustbuster -u https://yoursite.tld/ -w /usr/share/wordlists/dirb/small.txt -x .html,.php,.txt,`
 
 
-#### From rustbuster --help:
+### From rustbuster --help:
 
 ```
-RustBuster 0.1.6
-A. Karl W. <karl@nxnjz.net>
-Multithreaded Directory/File Buster
-
 USAGE:
     rustbuster [FLAGS] [OPTIONS] --url <Base URL> --wordlist <dictionary>
 
