@@ -26,13 +26,20 @@ Installing from source requires Cargo. Refer to https://doc.rust-lang.org/cargo/
 #### From rustbuster --help:
 
 ```
+RustBuster 0.1.6
+A. Karl W. <karl@nxnjz.net>
+Multithreaded Directory/File Buster
+
 USAGE:
     rustbuster [FLAGS] [OPTIONS] --url <Base URL> --wordlist <dictionary>
 
 FLAGS:
     -U, --unsafe-https    Ignore invalid hostnames and certificate errors
     -O, --overwrite       Allow overwriting the specified output file
-    -v                    Verbosity level: -v or -vv or -vvv.
+    -g, --get             Send GET requests. By default, Rustbuster uses HEAD.
+                          This is required for some servers that do not respond to HEAD requests properly.
+    -n, --post            Send POST requests. By default, Rustbuster uses HEAD.
+    -v                    Verbosity level: -v or -vv or -vvv. 
     -h, --help            Prints help information
     -V, --version         Prints version information
 
@@ -51,17 +58,18 @@ OPTIONS:
     -s, --status-codes <Status Codes>
             Comma separated list of status codes which should be considered success. Dashes can be used to specify
             ranges.
-             Default: 200-299,301,302,403
+             Default: 0-403,405-999
     -c, --cookie <Cookie List>               Optional cookie list in the form of "name=value; name2=value2;
                                              name3=value3;"
-    -o, --output-file <Output File>          Write results to a file. Only positive results will be saved, regardless of
-                                             verbosity level.
+    -o, --output-file <Output File>          Write results to a file. Only "positive" results will be saved, regardless
+                                             of verbosity level.
                                              If the file already exits, RustBuster will exit.
-                                             Use -O to allow overwriting an existing file.
+                                             Add -O to allow overwriting an existing file.
     -p, --proxy <Proxy>                      Use a proxy for http and https in one of the following formats:
-                                             http(s)://myproxy.net:port
+                                             http(s)://myproxy.tld:port
                                              user:pass@http(s)://myproxy.tld:port
     -r, --redirect-limit <Redirect Limit>    Set the maximum number of redirects to follow. Default: 0
+        --referer <Referer String>           Set the referer header.
     -R, --retry-count <Retry Count>          Set the maximum number of tries for a single request (applies in case of
                                              timeouts, or other errors). Default is 0.
     -T, --timeout <Timeout>...               Total timeout for a request, in seconds. Default: 30 seconds
