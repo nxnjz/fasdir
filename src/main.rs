@@ -4,6 +4,7 @@ mod rblib;
 
 use atty;
 use base64::encode as b64;
+use chrono::{DateTime, Local};
 use clap::{App, Arg};
 use indicatif::{ProgressBar, ProgressStyle};
 use rblib::*;
@@ -12,7 +13,7 @@ use std::sync::{Arc, Mutex};
 use std::{fs, fs::File, fs::OpenOptions, io::Write, path::Path, thread, time::Duration};
 
 fn main() {
-    let app_ver = "0.1.7";
+    let app_ver = "0.1.8";
     let app_name = "RustBuster";
 
     let args = App::new(app_name)
@@ -395,10 +396,13 @@ fn main() {
     );
     bar.tick();
     let bar = Arc::new(bar);
+    let now = Local::now().to_rfc2822();
     let init_msg = format!(
-        "## RustBuster ##\n\nTotal paths to be checked: {}\nThreads: {}\n\n",
+        "## RustBuster at [{}] trying a total of {} paths with {} threads, looking for codes {}",
+        now,
         urls.len(),
-        t_num
+        t_num,
+        stat_codes
     );
     bar_output(init_msg, 0, &config.verbosity, &bar, &config.tty);
 
