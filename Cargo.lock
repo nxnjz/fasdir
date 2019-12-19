@@ -1023,7 +1023,7 @@ dependencies = [
 
 [[package]]
 name = "rustbuster"
-version = "0.1.7"
+version = "0.1.8"
 dependencies = [
  "atty 0.2.13 (registry+https://github.com/rust-lang/crates.io-index)",
  "base64 0.10.1 (registry+https://github.com/rust-lang/crates.io-index)",
