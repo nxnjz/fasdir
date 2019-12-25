@@ -13,7 +13,7 @@ use std::sync::{Arc, Mutex};
 use std::{fs, fs::File, fs::OpenOptions, io::Write, path::Path, thread, time::Duration};
 
 fn main() {
-    let app_ver = "0.1.8";
+    let app_ver = "0.1.9";
     let app_name = "RustBuster";
 
     let args = App::new(app_name)
@@ -397,12 +397,20 @@ fn main() {
     bar.tick();
     let bar = Arc::new(bar);
     let now = Local::now().to_rfc2822();
+    let pretty_ext_vec = ext_str.split(',').collect::<Vec<&str>>();
+    let mut pretty_ext_str = String::new();
+    for ext in pretty_ext_vec.into_iter() {
+        pretty_ext_str.push_str("\"");
+        pretty_ext_str.push_str(ext);
+        pretty_ext_str.push_str("\" ");
+    }
     let init_msg = format!(
-        "## RustBuster at [{}] trying a total of {} paths with {} threads, looking for codes {}",
+        "## RustBuster at [{}] || trying a total of {} paths with {} threads | looking for codes {} | appending {}",
         now,
         urls.len(),
         t_num,
-        stat_codes
+        stat_codes,
+        pretty_ext_str,
     );
     bar_output(init_msg, 0, &config.verbosity, &bar, &config.tty);
 
