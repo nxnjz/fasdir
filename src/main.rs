@@ -14,7 +14,7 @@ use std::{fs, fs::File, fs::OpenOptions, io::Write, path::Path, thread, time::Du
 
 fn main() {
     let app_ver = "0.1.9";
-    let app_name = "RustBuster";
+    let app_name = "fasdir";
 
     let args = App::new(app_name)
         .version(app_ver)
@@ -142,7 +142,7 @@ fn main() {
             Arg::with_name("Output File")
                 .short("o")
                 .long("output-file")
-                .help("Write results to a file. Only \"positive\" results will be saved, regardless of verbosity level.\nIf the file already exits, RustBuster will exit.\nAdd -O to allow overwriting an existing file.")
+                .help("Write results to a file. Only \"positive\" results will be saved, regardless of verbosity level.\nIf the file already exits, fasdir will exit.\nAdd -O to allow overwriting an existing file.")
                 .multiple(false)
                 .takes_value(true)
                 .required(false)
@@ -165,7 +165,7 @@ fn main() {
             Arg::with_name("Use GET")
                 .short("g")
                 .long("get")
-                .help("Send GET requests. By default, Rustbuster uses HEAD.\nThis is required for some servers that do not respond to HEAD requests properly.")
+                .help("Send GET requests. By default, fasdir uses HEAD.\nThis is required for some servers that do not respond to HEAD requests properly.")
                 .multiple(false)
                 .takes_value(false)
                 .required(false)
@@ -173,7 +173,7 @@ fn main() {
             Arg::with_name("Use POST")
                 .short("n")
                 .long("post")
-                .help("Send POST requests. By default, Rustbuster uses HEAD.")
+                .help("Send POST requests. By default, fasdir uses HEAD.")
                 .multiple(false)
                 .takes_value(false)
                 .required(false)
@@ -405,7 +405,7 @@ fn main() {
         pretty_ext_str.push_str("\" ");
     }
     let init_msg = format!(
-        "## RustBuster at [{}] || trying a total of {} paths with {} threads | looking for codes {} | appending {}",
+        "## fasdir at [{}] || trying a total of {} paths with {} threads | looking for codes {} | appending {}",
         now,
         urls.len(),
         t_num,
