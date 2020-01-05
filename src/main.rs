@@ -18,7 +18,7 @@ fn main() {
 
     let args = App::new(app_name)
         .version(app_ver)
-        .author("A. Karl W. <karl@nxnjz.net>")
+        .author("nxnjz <nxnjz@nxnjz.net>")
         .about("Multithreaded Directory/File Buster")
         .arg(
             Arg::with_name("dictionary")
@@ -33,7 +33,7 @@ fn main() {
             Arg::with_name("Base URL")
                 .short("u")
                 .long("url")
-                .help("Base URL on which items are appended.")
+                .help("Base URL on which items are appended. The provided string may and may not end with a slash.")
                 .takes_value(true)
                 .required(true)
                 .display_order(1),
@@ -165,7 +165,7 @@ fn main() {
             Arg::with_name("Use GET")
                 .short("g")
                 .long("get")
-                .help("Send GET requests. By default, fasdir uses HEAD.\nThis is required for some servers that do not respond to HEAD requests properly.")
+                .help("Send GET requests. By default, fasdir uses HEAD.\nThis is required for some servers that do not respond to HEAD requests properly. HEAD requests sometimes disclose the presence of files that would normally return 404 on GET requests.")
                 .multiple(false)
                 .takes_value(false)
                 .required(false)
@@ -178,18 +178,6 @@ fn main() {
                 .takes_value(false)
                 .required(false)
             )
-            //.arg(
-            //Arg::with_name("Content Length")
-            //    .short("c")
-            //    .long("length")
-            //    .help("Print Content Length value of reponse")
-            //    .multiple(false)
-            //    .takes_value(false)
-            //    .required(false)
-            //)
-
-
-
 
         .get_matches();
 

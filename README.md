@@ -4,9 +4,18 @@ Fasdir is a fast multithreaded CLI tool for bruteforcing files and/or directorie
 
 # Installation
 
-## From binary:
+## From release:
 
+```
+wget https://gitlab.com/nxnjz/fasdir/uploads/5e9c024aaeffb6e838ca4caba392b077/fasdir-0.1.9-amd64.tar.xz
+tar -xf fasdir*.tar.xz && rm fasdir*.tar.xz
+mv fasdir ~/bin/fasdir
+```
+Add `~/bin` to your $PATH if it isn't already:
 
+```
+echo 'export PATH=$PATH:~/bin' >> ~/.bashrc
+```
 
 ## Compiling from source:
 
@@ -19,9 +28,11 @@ cargo install --path fasdir/
 
 Updating from source:
 
-`cd /path/to/fasdir`
-`git pull`
-`cargo install --path . --force`
+```
+cd /path/to/fasdir
+git pull
+cargo install --path . --force
+```
 
 # Usage Examples
 
@@ -34,6 +45,7 @@ Updating from source:
 ### to check for /$word.html /$word.php /$word.txt /$word (notice the trailing comma passed to -x)
 `rustbuster -u https://yoursite.tld/ -w /usr/share/wordlists/dirb/small.txt -x .html,.php,.txt,`
 
+**NOTE:** The URL passed in `-u` may and may not have a trailing slash.
 
 ### From rustbuster --help:
 
@@ -52,7 +64,7 @@ FLAGS:
     -V, --version         Prints version information
 
 OPTIONS:
-    -u, --url <Base URL>                     Base URL on which items are appended.
+    -u, --url <Base URL>                     Base URL on which items are appended. May and may not end with a slash.
     -w, --wordlist <dictionary>              Dictionary file, items separated by newlines and/or spaces
     -x, --ext <Extensions>
             Comma separated list of extensions to use.
@@ -62,7 +74,7 @@ OPTIONS:
                       .php.bak,.php.old,.php,.PHP,.php5,
     -t, --threads <Threads>
             Number of threads. Default: 12.
-            Please keep OS limits in mind, setting a high number may cause some threads to crash.
+             keep OS limits in mind, setting a high number may cause some threads to crash.
     -s, --status-codes <Status Codes>
             Comma separated list of status codes which should be considered success. Dashes can be used to specify
             ranges.
