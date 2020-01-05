@@ -47,7 +47,7 @@ cargo install --path . --force
 
 **NOTE:** The URL passed in `-u` may and may not have a trailing slash.
 
-### From rustbuster --help:
+### From fasdir --help:
 
 ```
 USAGE:
