@@ -1,15 +1,27 @@
 # RustBuster
 
-RustBuster is a fast and simple multithreaded CLI tool for bruteforcing files and/or directories on HTTP(s) servers, similar to GoBuster, DirBuster, and Dirb.
+Fasdir is a fast multithreaded CLI tool for bruteforcing files and/or directories on HTTP(s) servers, similar to GoBuster, DirBuster, and Dirb.
 
 # Installation
+
+## From binary:
+
+
 
 ## Compiling from source:
 
 Installing from source requires Cargo. Refer to https://doc.rust-lang.org/cargo/getting-started/installation.html for installing Cargo.
 
-`git clone https://gitlab.com/nxnjz/rustbuster.git` 
-`cargo install --path rustbuster/`
+```
+git clone https://gitlab.com/nxnjz/fasdir.git
+cargo install --path fasdir/
+```
+
+Updating from source:
+
+`cd /path/to/fasdir`
+`git pull`
+`cargo install --path . --force`
 
 # Usage Examples
 
