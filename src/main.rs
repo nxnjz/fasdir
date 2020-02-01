@@ -33,16 +33,16 @@ fn main() {
             Arg::with_name("Base URL")
                 .short("u")
                 .long("url")
-                .help("Base URL on which items are appended. The provided string may and may not end with a slash.")
+                .help("Base URL on which items are appended. Trailing slash is optional.")
                 .takes_value(true)
-                .required(true)
+                .required(false)
                 .display_order(1),
         )
         .arg(
             Arg::with_name("Extensions")
                 .short("x")
                 .long("ext")
-                .help("Comma separated list of extensions to use.\nIf the provided value ends with a comma, a blank extension will also be used (no extension).\nExamples: .html,.php,.txt\n          .html,.php,.txt,\n          .php.bak,.php.old,.php,.PHP,.php5,")
+                .help("Comma separated list of extensions to use.\nIf the provided value ends with a comma, a blank extension will also be used (no extension).\nExamples: .html,.php,.txt\n          .html,.php,.txt,\n          .php.bak,.php.old,.php,.PHP,")
                 .takes_value(true)
                 .required(false)
                 .display_order(3)
@@ -86,7 +86,7 @@ fn main() {
             Arg::with_name("Cookie List")
                 .short("c")
                 .long("cookie")
-                .help("Optional cookie list in the form of \"name=value; name2=value2; name3=value3;\"")
+                .help("Optional cookie list in the following format: \"name=value; name2=value2; name3=value3;\"")
                 .multiple(false)
                 .takes_value(true)
                 .required(false),
