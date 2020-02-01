@@ -13,7 +13,7 @@ use std::sync::{Arc, Mutex};
 use std::{fs, fs::File, fs::OpenOptions, io::Write, path::Path, thread, time::Duration};
 
 fn main() {
-    let app_ver = "0.1.9";
+    let app_ver = "0.2.0";
     let app_name = "fasdir";
 
     let args = App::new(app_name)
