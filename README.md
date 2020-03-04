@@ -1,4 +1,4 @@
-# RustBuster
+# Fasdir
 
 Fasdir is a fast multithreaded CLI tool for bruteforcing files and/or directories on HTTP(s) servers, similar to GoBuster, DirBuster, and Dirb.
 
