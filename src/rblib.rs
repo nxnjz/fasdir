@@ -11,26 +11,9 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with fasdir. If not, see <http://www.gnu.org/licenses/>. */
 
+use crate::config::Config;
 use indicatif::ProgressBar;
 use reqwest::{header, Client, RedirectPolicy};
-use std::collections::HashMap;
-use std::time::Duration;
-
-pub struct Config {
-    pub verbosity: u64,
-    pub codes: Vec<usize>,
-    pub timeout: Option<Duration>,
-    pub ignore_cert: bool,
-    pub redirect: usize,
-    pub proxy_url: Option<String>,
-    pub proxy_auth: Option<String>,
-    pub retry_limit: u64,
-    pub use_get: bool,
-    pub use_post: bool,
-    pub tty: bool,
-    //    pub print_len: bool,
-    //pub outfile: Option<File>,
-}
 
 pub fn output<T>(msg: T, msg_level: u64, &verbosity_conf: &u64) -> ()
 where
