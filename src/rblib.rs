@@ -11,37 +11,10 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with fasdir. If not, see <http://www.gnu.org/licenses/>. */
 
+use crate::cli::{bar_output, output};
 use crate::config::Config;
 use indicatif::ProgressBar;
 use reqwest::{header, Client, RedirectPolicy};
-
-pub fn output<T>(msg: T, msg_level: u64, &verbosity_conf: &u64) -> ()
-where
-    T: std::fmt::Display,
-{
-    if msg_level <= verbosity_conf {
-        println!("{}", msg);
-    }
-}
-
-pub fn bar_output<T>(
-    msg: T,
-    msg_level: u64,
-    &verbosity_conf: &u64,
-    bar: &ProgressBar,
-    &tty: &bool,
-) -> ()
-where
-    T: Into<String>,
-{
-    if msg_level <= verbosity_conf {
-        if tty {
-            bar.println(msg);
-        } else {
-            println!("{}", msg.into());
-        }
-    }
-}
 
 pub fn tjob(
     i: usize,

@@ -8,6 +8,7 @@ use crate::config::Config;
 use atty;
 use base64::encode as b64;
 use chrono::Local;
+use cli::{bar_output, output};
 use indicatif::{ProgressBar, ProgressStyle};
 use rblib::*;
 use reqwest::header;
