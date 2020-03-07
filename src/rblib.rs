@@ -13,6 +13,7 @@ along with fasdir. If not, see <http://www.gnu.org/licenses/>. */
 
 use crate::cli::{bar_output, output};
 use crate::config::Config;
+use crate::urllib::pseudo_extension;
 use indicatif::ProgressBar;
 use reqwest::{header, Client, RedirectPolicy};
 
@@ -97,6 +98,7 @@ pub fn tjob(
                 bar,
                 &config.tty,
             );
+            //TODO use configed method here!
             resp = client.head(url).send();
             attempt += 1;
         }
@@ -117,14 +119,7 @@ pub fn tjob(
         }
 
         let resp = resp.unwrap();
-        let resp_code: usize = resp
-            .status()
-            .to_string()
-            .split_whitespace()
-            .next()
-            .expect("[Err 31]Error parsing response code")
-            .parse()
-            .expect("[Err 32]Error parsing response code");
+        let resp_code: u16 = resp.status().as_u16();
         let cont_len = resp
             .headers()
             .get("Content-Length")
@@ -141,7 +136,10 @@ pub fn tjob(
         //     );
         //     force_get = true;
         // }
-        if config.codes.contains(&resp_code) {
+        if config
+            .status_code_config
+            .check(resp_code, &pseudo_extension(url))
+        {
             bar_output(out_msg.clone(), 0, &config.verbosity, bar, &config.tty);
             {
                 let mut found_urls = found_urls.lock().unwrap();
