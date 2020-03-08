@@ -162,7 +162,7 @@ pub fn args() -> (String, String, ArgMatches<'static>) {
             Arg::with_name("Use POST")
                 .short("n")
                 .long("post")
-                .help("Send POST requests. By default, fasdir uses HEAD.")
+                .help("Send POST requests with 'Content-Length: 0'. By default, fasdir uses HEAD.")
                 .multiple(false)
                 .takes_value(false)
                 .required(false)
