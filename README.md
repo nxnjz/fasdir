@@ -19,12 +19,20 @@ echo 'export PATH=$PATH:~/bin' >> ~/.bashrc
 
 ## Compiling from source:
 
-Installing from source requires Cargo. Refer to https://doc.rust-lang.org/cargo/getting-started/installation.html for installing Cargo.
+Building from source requires Cargo. Refer to https://doc.rust-lang.org/cargo/getting-started/installation.html for installing Cargo.
 
 ```
 git clone https://gitlab.com/nxnjz/fasdir.git
 cargo install --path fasdir/
 ```
+Or, to build without installing:
+
+```
+cd fasdir/
+cargo build --release
+```
+
+Binary will be written to `fasdir/target/release/fasdir`
 
 Updating from source:
 

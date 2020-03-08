@@ -50,7 +50,7 @@ pub fn args() -> (String, String, ArgMatches<'static>) {
             Arg::with_name("Status Codes")
                 .short("s")
                 .long("status-codes")
-                .help("Comma separated list of status codes which should be considered success. Dashes can be used to specify ranges.\n Default: Automatically detected")
+                .help("Optional comma separated list of status codes which should be considered success. Dashes can be used to specify ranges (e.g. -s 1-403,405-999)\nIf not specified, fasdir will probe the target. ")
                 .takes_value(true)
                 .required(false)
                 .display_order(5)
