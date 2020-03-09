@@ -120,12 +120,29 @@ pub fn tjob(
 
         let resp = resp.unwrap();
         let resp_code: u16 = resp.status().as_u16();
-        let cont_len = resp
-            .headers()
+        let resp_headers = resp.headers();
+        let mut redir_notice = String::from("Redirect: ");
+        if { 300..400 }.contains(&resp_code) {
+            redir_notice = redir_notice
+                + resp_headers
+                    .get("Location")
+                    .map(|l| l.to_str().unwrap_or("n/a"))
+                    .unwrap_or("n/a");
+        } else {
+            redir_notice = redir_notice + "NO";
+        }
+
+        let cont_len = resp_headers
             .get("Content-Length")
-            .map(|l| l.to_str().unwrap_or("x"))
-            .unwrap_or("x");
-        let out_msg = format!("{} [{}] (Length:{})", url, resp.status(), cont_len);
+            .map(|l| l.to_str().unwrap_or("n/a"))
+            .unwrap_or("n/a");
+        let out_msg = format!(
+            "{} - {} - Length: {} - {}",
+            url,
+            resp.status(),
+            cont_len,
+            redir_notice
+        );
         // if resp_code == 405 {
         //     bar_output(
         //         "Got 405, switching to GET",
