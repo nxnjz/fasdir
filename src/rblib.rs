@@ -65,7 +65,7 @@ pub fn tjob(
         .danger_accept_invalid_hostnames(config.ignore_cert)
         .danger_accept_invalid_certs(config.ignore_cert)
         .build()
-        .expect("[Err 51]Error configuring HTTP client");
+        .expect("[Err 51]Error building HTTP client");
     output(
         format!("HTTP client from thread {} is ready.", i),
         3,
@@ -129,7 +129,7 @@ pub fn tjob(
                     .map(|l| l.to_str().unwrap_or("n/a"))
                     .unwrap_or("n/a");
         } else {
-            redir_notice = redir_notice + "NO";
+            redir_notice = redir_notice + "No";
         }
 
         let cont_len = resp_headers

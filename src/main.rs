@@ -1,8 +1,7 @@
-//TO DO: do not save results to string unless user wants to output to file.
-
 mod cli;
 pub mod config;
 pub mod httplib;
+pub mod misc;
 mod rblib;
 mod tests;
 pub mod urllib;
@@ -200,7 +199,7 @@ fn main() {
             1,
             &verbosity,
         );
-        let probe = httplib::probe_status_codes(base_config, parsed_exts);
+        let probe = httplib::probe_status_codes(base_config, parsed_exts, t_num);
         output(format!("Probe results: {:?}", probe), 2, &verbosity);
         status_code_config = StatusCodeConfig::ByExt(probe);
     }
@@ -215,6 +214,8 @@ fn main() {
     if urls.len() < t_num {
         t_num = urls.len();
     }
+
+    //s
 
     let mut url_per_thread = Vec::new();
     for _ in 0..(urls.len() % t_num) {
@@ -233,6 +234,7 @@ fn main() {
         url_map.push(urls[start..end].to_vec());
         start = end;
     }
+    //e
 
     let config = Config {
         verbosity: verbosity,
