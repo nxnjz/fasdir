@@ -19,7 +19,13 @@ echo 'export PATH=$PATH:~/bin' >> ~/.bashrc
 
 ## Compiling from source:
 
-Building from source requires Cargo. Refer to https://doc.rust-lang.org/cargo/getting-started/installation.html for installing Cargo.
+### Requirements
+
+* Cargo. Refer to https://doc.rust-lang.org/cargo/getting-started/installation.html for installing Cargo.
+* OpenSSL Development libraries.
+* * Debian-based distros: `libssl-dev`
+* * CentOS/Fedora: `openssl-devel`
+* * Arch: `openssl` or `openssl-1.0`
 
 ```
 git clone https://gitlab.com/nxnjz/fasdir.git
