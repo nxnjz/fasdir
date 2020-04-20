@@ -56,7 +56,6 @@ pub fn args() -> (String, String, ArgMatches<'static>) {
                 .required(false)
                 .display_order(5)
                 .next_line_help(true)
-                //tmp to bypass auto probe
                 .default_value("1-403,405-999"),
         ).arg(
             Arg::with_name("Verbosity")

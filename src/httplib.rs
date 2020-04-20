@@ -15,64 +15,64 @@ pub fn fetch_random_ua() -> String {
         .expect("[Err HL1]")
         .to_string()
 }
-pub fn probe_status_codes(
-    config: BaseConnConfig,
-    ext_list: Vec<&str>,
-    thread_count: usize,
-) -> HashMap<String, u16> {
-    let mut thread_count = thread_count;
-    let mut results = Arc::new(Mutex::new(HashMap::new()));
-
-    if ext_list.len() < thread_count {
-        thread_count = ext_list.len();
-    }
-    let ext_list_list = split_evenly(ext_list, thread_count);
-    let mut threads = Vec::new();
-    let config = Arc::new(config);
-    for i in 0..thread_count {
-        let ext_list = ext_list_list[i as usize]
-            .iter()
-            .map(|x| String::from(*x))
-            .collect();
-        let config = Arc::clone(&config);
-        let results = Arc::clone(&mut results);
-        threads.push(thread::spawn(move || {
-            probe_status_code_thread(&config, ext_list, results);
-        }));
-    }
-    for t in threads {
-        let _ = t.join();
-    }
-
-    return Arc::try_unwrap(results).unwrap().into_inner().unwrap();
-}
-
-fn probe_status_code_thread(
-    config: &BaseConnConfig,
-    ext_list: Vec<String>,
-    results: Arc<Mutex<HashMap<String, u16>>>,
-) {
-    let mut client = Client::builder();
-    if config.proxy_opt().is_some() {
-        client = client.proxy(config.proxy_opt().unwrap());
-    }
-    let client = client
-        .timeout(config.timeout_opt())
-        .danger_accept_invalid_hostnames(config.ignore_cert())
-        .danger_accept_invalid_certs(config.ignore_cert())
-        .build()
-        .expect("[Err HLC1] Error building http client");
-    let base_url = config.base_url();
-    for ext in ext_list.iter() {
-        let url = format!("{}thisurlshouldnotexistelseitsreallybad{}", base_url, ext);
-        //TODO use configed method
-        let resp = client.get(&url).send();
-        //TODO handle retries
-        let resp = resp.unwrap();
-        let code: u16 = resp.status().as_u16();
-        {
-            let mut results = results.lock().unwrap();
-            results.insert(ext.to_string(), code);
-        }
-    }
-}
+//pub fn probe_status_codes(
+//    config: BaseConnConfig,
+//    ext_list: Vec<&str>,
+//    thread_count: usize,
+//) -> HashMap<String, u16> {
+//    let mut thread_count = thread_count;
+//    let mut results = Arc::new(Mutex::new(HashMap::new()));
+//
+//    if ext_list.len() < thread_count {
+//        thread_count = ext_list.len();
+//    }
+//    let ext_list_list = split_evenly(ext_list, thread_count);
+//    let mut threads = Vec::new();
+//    let config = Arc::new(config);
+//    for i in 0..thread_count {
+//        let ext_list = ext_list_list[i as usize]
+//            .iter()
+//            .map(|x| String::from(*x))
+//            .collect();
+//        let config = Arc::clone(&config);
+//        let results = Arc::clone(&mut results);
+//        threads.push(thread::spawn(move || {
+//            probe_status_code_thread(&config, ext_list, results);
+//        }));
+//    }
+//    for t in threads {
+//        let _ = t.join();
+//    }
+//
+//    return Arc::try_unwrap(results).unwrap().into_inner().unwrap();
+//}
+//
+//fn probe_status_code_thread(
+//    config: &BaseConnConfig,
+//    ext_list: Vec<String>,
+//    results: Arc<Mutex<HashMap<String, u16>>>,
+//) {
+//    let mut client = Client::builder();
+//    if config.proxy_opt().is_some() {
+//        client = client.proxy(config.proxy_opt().unwrap());
+//    }
+//    let client = client
+//        .timeout(config.timeout_opt())
+//        .danger_accept_invalid_hostnames(config.ignore_cert())
+//        .danger_accept_invalid_certs(config.ignore_cert())
+//        .build()
+//        .expect("[Err HLC1] Error building http client");
+//    let base_url = config.base_url();
+//    for ext in ext_list.iter() {
+//        let url = format!("{}thisurlshouldnotexistelseitsreallybad{}", base_url, ext);
+//        //TODO use configed method
+//        let resp = client.get(&url).send();
+//        //TODO handle retries
+//        let resp = resp.unwrap();
+//        let code: u16 = resp.status().as_u16();
+//        {
+//            let mut results = results.lock().unwrap();
+//            results.insert(ext.to_string(), code);
+//        }
+//    }
+//}

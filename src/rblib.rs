@@ -3,6 +3,7 @@ use crate::config::Config;
 use crate::urllib::pseudo_extension;
 use indicatif::ProgressBar;
 use reqwest::{header, Client, RedirectPolicy};
+use std::time::{Duration, Instant};
 
 pub fn tjob(
     i: usize,
@@ -60,6 +61,7 @@ pub fn tjob(
     );
     //let mut force_get = false;
     for url in urllist.iter() {
+        let now = Instant::now();
         let mut attempt = 0;
         bar_output(
             format!("Thread {} sending request to {}", i, url),
@@ -85,8 +87,13 @@ pub fn tjob(
                 bar,
                 &config.tty,
             );
-            //TODO use configed method here!
-            resp = client.head(url).send();
+            if config.use_get {
+                resp = client.get(url).send();
+            } else if config.use_post {
+                resp = client.post(url).send();
+            } else {
+                resp = client.head(url).send();
+            }
             attempt += 1;
         }
         if resp.is_err() {
@@ -153,5 +160,6 @@ pub fn tjob(
             bar_output(out_msg, 2, &config.verbosity, bar, &config.tty);
         }
         bar.inc(1);
+        println!("{}", now.elapsed().as_micros());
     }
 }

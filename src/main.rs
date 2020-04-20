@@ -166,43 +166,40 @@ fn main() {
     let status_codes_arg = args.value_of("Status Codes");
     let mut status_codes: Vec<u16> = Vec::new();
     let mut status_code_config;
-    if status_codes_arg.is_some() {
-        for code in status_codes_arg.unwrap().split(',') {
-            if code.contains('-') {
-                let mut code_range = code.split('-');
-                let start = code_range
-                    .next()
-                    .expect("[err 11]Unable to parse status code range")
-                    .parse()
-                    .expect("[err 12]Unable to parse status code range");
-                let end = code_range
-                    .next()
-                    .expect("[err 13]Unable to parse status code range")
-                    .parse()
-                    .expect("[err 14]Unable to parse status code range");
-                status_codes.append(&mut (start..=end).collect::<Vec<u16>>());
-            } else {
-                status_codes.push(code.parse().expect("[err 15]Unable to parse status code"));
-            }
+    for code in status_codes_arg.unwrap().split(',') {
+        if code.contains('-') {
+            let mut code_range = code.split('-');
+            let start = code_range
+                .next()
+                .expect("[err 11]Unable to parse status code range")
+                .parse()
+                .expect("[err 12]Unable to parse status code range");
+            let end = code_range
+                .next()
+                .expect("[err 13]Unable to parse status code range")
+                .parse()
+                .expect("[err 14]Unable to parse status code range");
+            status_codes.append(&mut (start..=end).collect::<Vec<u16>>());
+        } else {
+            status_codes.push(code.parse().expect("[err 15]Unable to parse status code"));
         }
-        status_code_config = StatusCodeConfig::from_whitelist(status_codes);
-    } else {
-        let mut parsed_exts: Vec<String> = urls.iter().map(|url| pseudo_extension(url)).collect();
-        let mut parsed_exts: Vec<&str> = parsed_exts.iter().map(|x| &**x).collect();
-        let set: HashSet<_> = parsed_exts.drain(..).collect();
-        parsed_exts.extend(set.into_iter());
-        output(
-            format!(
-                "No status codes specified, probing target using file extensions: {}",
-                parsed_exts.join(",")
-            ),
-            1,
-            &verbosity,
-        );
-        let probe = httplib::probe_status_codes(base_config, parsed_exts, t_num);
-        output(format!("Probe results: {:?}", probe), 2, &verbosity);
-        status_code_config = StatusCodeConfig::ByExt(probe);
     }
+    status_code_config = StatusCodeConfig::from_whitelist(status_codes);
+    //let mut parsed_exts: Vec<String> = urls.iter().map(|url| pseudo_extension(url)).collect();
+    //let mut parsed_exts: Vec<&str> = parsed_exts.iter().map(|x| &**x).collect();
+    //let set: HashSet<_> = parsed_exts.drain(..).collect();
+    //parsed_exts.extend(set.into_iter());
+    //output(
+    //    format!(
+    //        "No status codes specified, probing target using file extensions: {}",
+    //        parsed_exts.join(",")
+    //    ),
+    //    1,
+    //    &verbosity,
+    //);
+    //let probe = httplib::probe_status_codes(base_config, parsed_exts, t_num);
+    //output(format!("Probe results: {:?}", probe), 2, &verbosity);
+    //status_code_config = StatusCodeConfig::ByExt(probe);
 
     let extra_headers = args.values_of("Header").map(|x| x.collect::<Vec<&str>>());
 
