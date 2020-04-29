@@ -96,7 +96,7 @@ fn main() {
 
     let retry_limit: u64 = args
         .value_of("Retry Count")
-        .unwrap_or("0")
+        .unwrap_or("-1")
         .parse()
         .unwrap_or(0);
     base_config.set_retry_limit(retry_limit);
@@ -163,10 +163,10 @@ fn main() {
             urls.push(base_url.to_owned() + i + j);
         }
     }
-    let status_codes_arg = args.value_of("Status Codes");
+    let status_codes_arg = args.value_of("Status Codes").unwrap();
     let mut status_codes: Vec<u16> = Vec::new();
     let mut status_code_config;
-    for code in status_codes_arg.unwrap().split(',') {
+    for code in status_codes_arg.split(',') {
         if code.contains('-') {
             let mut code_range = code.split('-');
             let start = code_range
@@ -185,34 +185,14 @@ fn main() {
         }
     }
     status_code_config = StatusCodeConfig::from_whitelist(status_codes);
-    //let mut parsed_exts: Vec<String> = urls.iter().map(|url| pseudo_extension(url)).collect();
-    //let mut parsed_exts: Vec<&str> = parsed_exts.iter().map(|x| &**x).collect();
-    //let set: HashSet<_> = parsed_exts.drain(..).collect();
-    //parsed_exts.extend(set.into_iter());
-    //output(
-    //    format!(
-    //        "No status codes specified, probing target using file extensions: {}",
-    //        parsed_exts.join(",")
-    //    ),
-    //    1,
-    //    &verbosity,
-    //);
-    //let probe = httplib::probe_status_codes(base_config, parsed_exts, t_num);
-    //output(format!("Probe results: {:?}", probe), 2, &verbosity);
-    //status_code_config = StatusCodeConfig::ByExt(probe);
-
     let extra_headers = args.values_of("Header").map(|x| x.collect::<Vec<&str>>());
 
     let use_get = args.occurrences_of("Use GET") >= 1;
-    //println!("{:?}", use_get);
     let use_post = args.occurrences_of("Use POST") >= 1;
-    //println!("{:?}", use_post);
 
     if urls.len() < t_num {
         t_num = urls.len();
     }
-
-    //s
 
     let mut url_per_thread = Vec::new();
     for _ in 0..(urls.len() % t_num) {
@@ -231,7 +211,6 @@ fn main() {
         url_map.push(urls[start..end].to_vec());
         start = end;
     }
-    //e
 
     let config = Config {
         verbosity: verbosity,
@@ -244,7 +223,7 @@ fn main() {
         retry_limit: retry_limit,
         use_get: use_get,
         use_post: use_post,
-        tty: atty::is(atty::Stream::Stdout), //outfile: outfile,
+        tty: atty::is(atty::Stream::Stdout),
     };
 
     let mut headers = header::HeaderMap::new();
@@ -282,23 +261,25 @@ fn main() {
     );
     bar.tick();
     let bar = Arc::new(bar);
-    let now = Local::now().to_rfc2822();
-    let pretty_ext_vec = ext_str.split(',').collect::<Vec<&str>>();
-    let mut pretty_ext_str = String::new();
-    for ext in pretty_ext_vec.into_iter() {
-        pretty_ext_str.push_str("\"");
-        pretty_ext_str.push_str(ext);
-        pretty_ext_str.push_str("\" ");
+    {
+        let now = Local::now().to_rfc2822();
+        let pretty_ext_vec = ext_str.split(',').collect::<Vec<&str>>();
+        let mut pretty_ext_str = String::new();
+        for ext in pretty_ext_vec.into_iter() {
+            pretty_ext_str.push_str("\"");
+            pretty_ext_str.push_str(ext);
+            pretty_ext_str.push_str("\" ");
+        }
+        let init_msg = format!(
+            "Fasdir at {} | Total Paths: {} | Threads: {} | Matching codes: {} | Appending {}\n\n",
+            now,
+            urls.len(),
+            t_num,
+            status_codes_arg,
+            pretty_ext_str,
+        );
+        bar_output(init_msg, 0, &config.verbosity, &bar, &config.tty);
     }
-    let init_msg = format!(
-        "## fasdir at [{}] || trying a total of {} paths with {} threads | appending {}",
-        now,
-        urls.len(),
-        t_num,
-        //status_codes_arg,
-        pretty_ext_str,
-    );
-    bar_output(init_msg, 0, &config.verbosity, &bar, &config.tty);
 
     let mut threads = Vec::new();
     let mut found_urls = Arc::new(Mutex::new(found_urls));

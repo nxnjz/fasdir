@@ -59,9 +59,7 @@ pub fn tjob(
         3,
         &config.verbosity,
     );
-    //let mut force_get = false;
     for url in urllist.iter() {
-        let now = Instant::now();
         let mut attempt = 0;
         bar_output(
             format!("Thread {} sending request to {}", i, url),
@@ -71,7 +69,6 @@ pub fn tjob(
             &config.tty,
         );
         let mut resp;
-        //if config.use_get || force_get {
         if config.use_get {
             resp = client.get(url).send();
         } else if config.use_post {
@@ -137,16 +134,6 @@ pub fn tjob(
             cont_len,
             redir_notice
         );
-        // if resp_code == 405 {
-        //     bar_output(
-        //         "Got 405, switching to GET",
-        //         1,
-        //         &config.verbosity,
-        //         bar,
-        //         &config.tty,
-        //     );
-        //     force_get = true;
-        // }
         if config
             .status_code_config
             .check(resp_code, &pseudo_extension(url))
@@ -160,6 +147,5 @@ pub fn tjob(
             bar_output(out_msg, 2, &config.verbosity, bar, &config.tty);
         }
         bar.inc(1);
-        println!("{}", now.elapsed().as_micros());
     }
 }
